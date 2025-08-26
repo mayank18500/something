@@ -5,7 +5,7 @@ import { NoteCard } from '../notes/NoteCard';
 import { NoteEditor } from '../notes/NoteEditor';
 import { AccountView } from './AccountView';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import toast from 'react-hot-toast';
 
 interface Note {
@@ -37,6 +37,12 @@ export function Dashboard() {
 
   const loadNotes = async () => {
     if (!user) return;
+    
+    if (!isSupabaseConfigured()) {
+      toast.error('Please connect to Supabase to load notes');
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase

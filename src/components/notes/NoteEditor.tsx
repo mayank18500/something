@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { X, Save, Hash, Sparkles } from 'lucide-react';
 import { RichTextEditor } from '../editor/RichTextEditor';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import toast from 'react-hot-toast';
 
 interface Note {
@@ -80,6 +80,11 @@ export function NoteEditor({ isOpen, onClose, note, onSave }: NoteEditorProps) {
 
   const handleSave = async () => {
     if (!user || saving) return;
+    
+    if (!isSupabaseConfigured()) {
+      toast.error('Please connect to Supabase to save notes');
+      return;
+    }
     
     if (!title.trim() && !content.trim()) {
       toast.error('Please add a title or content');
